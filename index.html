@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZIDDI AI STUDIO</title>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <style>
+        :root { --bg: #05070a; --card: #11141d; --gold: #ffcc00; --neon: #00ff41; --text: #ffffff; }
+        body { background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; margin: 0; overflow-x: hidden; }
+
+        /* Animated Header */
+        .header { text-align: center; padding: 60px 20px; background: radial-gradient(circle, #1a1e29 0%, #05070a 100%); }
+        .header h1 { color: var(--gold); letter-spacing: 8px; margin: 0; font-size: 42px; text-transform: uppercase; text-shadow: 0 0 20px rgba(255, 204, 0, 0.4); }
+        .header p { color: #888; font-size: 16px; margin-top: 15px; letter-spacing: 1px; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+
+        /* Large Professional Pricing Cards */
+        .pricing-section { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-bottom: 60px; }
+        .plan-card { 
+            background: var(--card); border: 1px solid #222; border-radius: 30px; padding: 40px 30px; 
+            text-align: center; transition: all 0.4s ease; position: relative; display: flex; flex-direction: column;
+        }
+        .plan-card:hover { transform: translateY(-15px); border-color: var(--gold); box-shadow: 0 20px 40px rgba(255, 204, 0, 0.15); }
+        
+        .plan-card h2 { color: var(--gold); font-size: 28px; margin: 0; letter-spacing: 2px; }
+        .plan-card .price { font-size: 50px; font-weight: 800; margin: 25px 0; color: #fff; }
+        .plan-card .price span { font-size: 16px; color: #555; }
+        
+        .plan-card ul { list-style: none; padding: 0; margin: 30px 0; flex-grow: 1; text-align: left; }
+        .plan-card ul li { margin-bottom: 15px; font-size: 15px; color: #bbb; display: flex; align-items: center; }
+        .plan-card ul li::before { content: '✦'; color: var(--gold); margin-right: 12px; font-size: 18px; }
+
+        .btn-buy { 
+            background: transparent; border: 2px solid var(--gold); color: var(--gold); 
+            padding: 15px; border-radius: 15px; font-weight: bold; cursor: pointer; 
+            text-transform: uppercase; transition: 0.3s; text-decoration: none;
+        }
+        .btn-buy:hover { background: var(--gold); color: #000; box-shadow: 0 0 20px var(--gold); }
+
+        /* Highlight Premium */
+        .plan-card.featured { border: 2px solid var(--gold); background: linear-gradient(145deg, #11141d, #1a1e29); }
+        .badge { background: var(--gold); color: #000; padding: 5px 20px; border-radius: 20px; font-size: 12px; font-weight: bold; position: absolute; top: -15px; left: 50%; transform: translateX(-50%); }
+
+        /* Login & Studio Box */
+        #login-section, #main-tool { max-width: 450px; margin: 0 auto; background: var(--card); padding: 40px; border-radius: 30px; border: 1px solid #333; box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
+        #main-tool { max-width: 900px; display: none; }
+        
+        input { width: 100%; padding: 15px; background: #080a0f; border: 1px solid #333; color: #fff; border-radius: 12px; margin-bottom: 20px; box-sizing: border-box; font-size: 16px; }
+        .btn-login { width: 100%; padding: 18px; background: var(--gold); border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        .btn-login:hover { letter-spacing: 2px; }
+
+        @media (max-width: 992px) { .pricing-section { grid-template-columns: 1fr; } }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1 id="ui-title">ZIDDI AI STUDIO</h1>
+        <p id="ui-subtitle">Revolutionizing Japanese to Hindi AI Dubbing</p>
+    </div>
+
+    <div class="container">
+        <div id="pricing-ui" class="pricing-section">
+            <div class="plan-card" id="card-free">
+                <h2>FREE</h2>
+                <div class="price">$<span id="p-price-free">0</span><span>/mo</span></div>
+                <ul id="p-feat-free"></ul>
+                <a href="#" id="p-link-free" class="btn-buy">Get Started</a>
+            </div>
+            <div class="plan-card featured" id="card-standard">
+                <div class="badge">MOST POPULAR</div>
+                <h2>STANDARD</h2>
+                <div class="price">$<span id="p-price-standard">19</span><span>/mo</span></div>
+                <ul id="p-feat-standard"></ul>
+                <a href="#" id="p-link-standard" class="btn-buy">Upgrade Now</a>
+            </div>
+            <div class="plan-card" id="card-premium">
+                <h2>PREMIUM</h2>
+                <div class="price">$<span id="p-price-premium">49</span><span>/mo</span></div>
+                <ul id="p-feat-premium"></ul>
+                <a href="#" id="p-link-premium" class="btn-buy">Go Pro</a>
+            </div>
+        </div>
+
+        <div id="login-section">
+            <h2 style="text-align:center; margin-bottom:30px; color:var(--gold)">ACCESS STUDIO</h2>
+            <input type="email" id="email" placeholder="Enter Registered Gmail">
+            <input type="password" id="pass" placeholder="Enter Password">
+            <button class="btn-login" onclick="login()">LOGIN TO AI ENGINE</button>
+        </div>
+
+        <div id="main-tool">
+            <div style="display:flex; justify-content:space-between; margin-bottom:30px;">
+                <span>Logged in: <b id="u-mail" style="color:var(--gold)"></b></span>
+                <span>Plan: <b id="u-plan" style="color:var(--neon)"></b></span>
+            </div>
+            <div style="text-align:center; border: 2px dashed #333; padding:60px; border-radius:25px;">
+                <span style="font-size:50px;">🎬</span>
+                <h3>Drag & Drop Video Here</h3>
+                <p>Max Duration allowed: <span id="u-limit" style="color:var(--gold)">0</span> Minutes</p>
+                <select id="toLang" style="width:200px; padding:10px; border-radius:10px; background:#000; color:#fff;"></select>
+            </div>
+            <button class="btn-login" style="margin-top:20px; background:var(--neon); color:#000;">START JAPANESE TO HINDI DUBBING</button>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyCFy28nNtxhkjfpOd0aCfYkjHUwErh1WVQ",
+            authDomain: "movie-1e6fc.firebaseapp.com",
+            projectId: "movie-1e6fc",
+            databaseURL: "https://movie-1e6fc-default-rtdb.firebaseio.com"
+        };
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // 1. Sync Branding & Plans from Admin
+        db.ref('settings/ui').on('value', s => {
+            const d = s.val();
+            if(d) {
+                document.getElementById('ui-title').innerText = d.title;
+                document.getElementById('ui-subtitle').innerText = d.subtitle;
+            }
+        });
+
+        db.ref('settings/plans').on('value', snap => {
+            snap.forEach(child => {
+                const key = child.key;
+                const data = child.val();
+                document.getElementById(`p-price-${key}`).innerText = data.price;
+                document.getElementById(`p-link-${key}`).href = data.link;
+                
+                const list = document.getElementById(`p-feat-${key}`);
+                list.innerHTML = '';
+                if(data.features) {
+                    data.features.split(',').forEach(f => {
+                        list.innerHTML += `<li>${f.trim()}</li>`;
+                    });
+                }
+            });
+        });
+
+        db.ref('settings/languages').on('value', s => {
+            const sel = document.getElementById('toLang'); sel.innerHTML = '';
+            s.forEach(c => { sel.innerHTML += `<option>${c.val()}</option>`; });
+        });
+
+        // 2. Login Logic
+        function login() {
+            const emailIn = document.getElementById('email').value.toLowerCase().replace(/\./g, '_');
+            const passIn = document.getElementById('pass').value;
+            db.ref('users/' + emailIn).once('value', snap => {
+                const u = snap.val();
+                if(u && u.pass === passIn) {
+                    document.getElementById('pricing-ui').style.display = 'none';
+                    document.getElementById('login-section').style.display = 'none';
+                    document.getElementById('main-tool').style.display = 'block';
+                    document.getElementById('u-mail').innerText = u.email;
+                    document.getElementById('u-plan').innerText = u.plan.toUpperCase();
+                    db.ref('settings/plans/' + u.plan).once('value', p => {
+                        document.getElementById('u-limit').innerText = p.val().limit;
+                    });
+                } else { alert("Access Denied! Gmail or Password is wrong."); }
+            });
+        }
+    </script>
+</body>
+  </html>
