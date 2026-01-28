@@ -6,104 +6,95 @@
     <title>ZIDDI AI STUDIO</title>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+    <script src="https://upload-widget.cloudinary.com/global/all.js" type="text/javascript"></script>
+    
     <style>
         :root { --bg: #05070a; --card: #11141d; --gold: #ffcc00; --neon: #00ff41; --text: #ffffff; }
-        body { background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; margin: 0; overflow-x: hidden; }
-
-        /* Animated Header */
-        .header { text-align: center; padding: 60px 20px; background: radial-gradient(circle, #1a1e29 0%, #05070a 100%); }
-        .header h1 { color: var(--gold); letter-spacing: 8px; margin: 0; font-size: 42px; text-transform: uppercase; text-shadow: 0 0 20px rgba(255, 204, 0, 0.4); }
-        .header p { color: #888; font-size: 16px; margin-top: 15px; letter-spacing: 1px; }
-
-        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
-
-        /* Large Professional Pricing Cards */
-        .pricing-section { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-bottom: 60px; }
-        .plan-card { 
-            background: var(--card); border: 1px solid #222; border-radius: 30px; padding: 40px 30px; 
-            text-align: center; transition: all 0.4s ease; position: relative; display: flex; flex-direction: column;
-        }
-        .plan-card:hover { transform: translateY(-15px); border-color: var(--gold); box-shadow: 0 20px 40px rgba(255, 204, 0, 0.15); }
+        body { background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; margin: 0; padding: 0; }
         
-        .plan-card h2 { color: var(--gold); font-size: 28px; margin: 0; letter-spacing: 2px; }
-        .plan-card .price { font-size: 50px; font-weight: 800; margin: 25px 0; color: #fff; }
-        .plan-card .price span { font-size: 16px; color: #555; }
+        .header { text-align: center; padding: 40px 20px; background: radial-gradient(circle, #1a1e29 0%, #05070a 100%); }
+        .header h1 { color: var(--gold); letter-spacing: 5px; margin: 0; font-size: 28px; text-transform: uppercase; }
         
-        .plan-card ul { list-style: none; padding: 0; margin: 30px 0; flex-grow: 1; text-align: left; }
-        .plan-card ul li { margin-bottom: 15px; font-size: 15px; color: #bbb; display: flex; align-items: center; }
-        .plan-card ul li::before { content: '✦'; color: var(--gold); margin-right: 12px; font-size: 18px; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
 
-        .btn-buy { 
-            background: transparent; border: 2px solid var(--gold); color: var(--gold); 
-            padding: 15px; border-radius: 15px; font-weight: bold; cursor: pointer; 
-            text-transform: uppercase; transition: 0.3s; text-decoration: none;
-        }
-        .btn-buy:hover { background: var(--gold); color: #000; box-shadow: 0 0 20px var(--gold); }
+        /* Pricing Cards */
+        .pricing-section { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px; }
+        .plan-card { background: var(--card); border: 1px solid #222; border-radius: 25px; padding: 25px; text-align: center; transition: 0.3s; }
+        .plan-card:hover { border-color: var(--gold); transform: translateY(-5px); }
+        .btn-buy { display: block; padding: 12px; border: 2px solid var(--gold); color: var(--gold); border-radius: 10px; text-decoration: none; font-weight: bold; margin-top: 15px; font-size: 14px; }
 
-        /* Highlight Premium */
-        .plan-card.featured { border: 2px solid var(--gold); background: linear-gradient(145deg, #11141d, #1a1e29); }
-        .badge { background: var(--gold); color: #000; padding: 5px 20px; border-radius: 20px; font-size: 12px; font-weight: bold; position: absolute; top: -15px; left: 50%; transform: translateX(-50%); }
-
-        /* Login & Studio Box */
-        #login-section, #main-tool { max-width: 450px; margin: 0 auto; background: var(--card); padding: 40px; border-radius: 30px; border: 1px solid #333; box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
-        #main-tool { max-width: 900px; display: none; }
+        /* Studio Panel */
+        #login-section, #main-tool { max-width: 500px; margin: 0 auto; background: var(--card); padding: 30px; border-radius: 30px; border: 1px solid #333; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+        #main-tool { display: none; max-width: 700px; }
         
-        input { width: 100%; padding: 15px; background: #080a0f; border: 1px solid #333; color: #fff; border-radius: 12px; margin-bottom: 20px; box-sizing: border-box; font-size: 16px; }
-        .btn-login { width: 100%; padding: 18px; background: var(--gold); border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s; }
-        .btn-login:hover { letter-spacing: 2px; }
+        /* Status Bar: Login Left, Plan Right */
+        .user-status-bar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; padding: 15px; background: #080a0f; border-radius: 15px; border: 1px solid #222; }
+        .u-info { font-size: 12px; color: #888; }
+        .u-info b { color: var(--gold); font-size: 13px; }
 
-        @media (max-width: 992px) { .pricing-section { grid-template-columns: 1fr; } }
+        /* Upload Widget Area */
+        .upload-area { border: 2px dashed #444; padding: 50px 20px; border-radius: 25px; text-align: center; cursor: pointer; transition: 0.3s; background: rgba(255,255,255,0.02); }
+        .upload-area:hover { border-color: var(--neon); background: rgba(0,255,65,0.05); }
+
+        /* Progress & Result */
+        #status-container { display: none; margin-top: 25px; }
+        .progress-bar { width: 100%; height: 8px; background: #222; border-radius: 10px; overflow: hidden; margin: 10px 0; }
+        .progress-fill { width: 0%; height: 100%; background: var(--neon); box-shadow: 0 0 10px var(--neon); transition: 0.4s; }
+        
+        video { width: 100%; border-radius: 15px; border: 1px solid #333; margin-top: 20px; display: none; }
+        
+        .btn-action { width: 100%; padding: 16px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; margin-top: 15px; font-size: 16px; transition: 0.3s; }
+        .btn-dub { background: var(--neon); color: #000; }
+        .btn-download { background: var(--gold); color: #000; text-decoration: none; display: none; text-align: center; }
+
+        @media (max-width: 768px) { .pricing-section { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
     <div class="header">
         <h1 id="ui-title">ZIDDI AI STUDIO</h1>
-        <p id="ui-subtitle">Revolutionizing Japanese to Hindi AI Dubbing</p>
+        <p id="ui-subtitle" style="color:#666; font-size: 14px;">Premium AI Video Dubbing</p>
     </div>
 
     <div class="container">
         <div id="pricing-ui" class="pricing-section">
-            <div class="plan-card" id="card-free">
-                <h2>FREE</h2>
-                <div class="price">$<span id="p-price-free">0</span><span>/mo</span></div>
-                <ul id="p-feat-free"></ul>
-                <a href="#" id="p-link-free" class="btn-buy">Get Started</a>
-            </div>
-            <div class="plan-card featured" id="card-standard">
-                <div class="badge">MOST POPULAR</div>
-                <h2>STANDARD</h2>
-                <div class="price">$<span id="p-price-standard">19</span><span>/mo</span></div>
-                <ul id="p-feat-standard"></ul>
-                <a href="#" id="p-link-standard" class="btn-buy">Upgrade Now</a>
-            </div>
-            <div class="plan-card" id="card-premium">
-                <h2>PREMIUM</h2>
-                <div class="price">$<span id="p-price-premium">49</span><span>/mo</span></div>
-                <ul id="p-feat-premium"></ul>
-                <a href="#" id="p-link-premium" class="btn-buy">Go Pro</a>
-            </div>
+            <div class="plan-card" id="card-free"><h2>FREE</h2><div id="p-price-free">$0</div><ul id="p-feat-free"></ul><a href="#" id="p-link-free" class="btn-buy">Get Started</a></div>
+            <div class="plan-card" id="card-standard" style="border-color:var(--gold)"><h2>STANDARD</h2><div id="p-price-standard">$19</div><ul id="p-feat-standard"></ul><a href="#" id="p-link-standard" class="btn-buy" style="background:var(--gold); color:#000;">Buy Now</a></div>
+            <div class="plan-card" id="card-premium"><h2>PREMIUM</h2><div id="p-price-premium">$49</div><ul id="p-feat-premium"></ul><a href="#" id="p-link-premium" class="btn-buy">Go Pro</a></div>
         </div>
 
         <div id="login-section">
-            <h2 style="text-align:center; margin-bottom:30px; color:var(--gold)">ACCESS STUDIO</h2>
-            <input type="email" id="email" placeholder="Enter Registered Gmail">
-            <input type="password" id="pass" placeholder="Enter Password">
-            <button class="btn-login" onclick="login()">LOGIN TO AI ENGINE</button>
+            <h2 style="text-align:center; color:var(--gold); margin-top:0;">LOGIN</h2>
+            <input type="email" id="email" style="width:100%; padding:14px; margin-bottom:15px; background:#000; border:1px solid #333; color:#fff; border-radius:10px;" placeholder="Registered Gmail">
+            <input type="password" id="pass" style="width:100%; padding:14px; margin-bottom:15px; background:#000; border:1px solid #333; color:#fff; border-radius:10px;" placeholder="Password">
+            <button class="btn-action btn-dub" onclick="login()">ENTER STUDIO</button>
         </div>
 
         <div id="main-tool">
-            <div style="display:flex; justify-content:space-between; margin-bottom:30px;">
-                <span>Logged in: <b id="u-mail" style="color:var(--gold)"></b></span>
-                <span>Plan: <b id="u-plan" style="color:var(--neon)"></b></span>
+            <div class="user-status-bar">
+                <div class="u-info">USER: <br><b id="u-mail"></b></div>
+                <div class="u-info" style="text-align:right;">PLAN: <br><b id="u-plan" style="color:var(--neon)"></b></div>
             </div>
-            <div style="text-align:center; border: 2px dashed #333; padding:60px; border-radius:25px;">
-                <span style="font-size:50px;">🎬</span>
-                <h3>Drag & Drop Video Here</h3>
-                <p>Max Duration allowed: <span id="u-limit" style="color:var(--gold)">0</span> Minutes</p>
-                <select id="toLang" style="width:200px; padding:10px; border-radius:10px; background:#000; color:#fff;"></select>
+
+            <div class="upload-area" id="upload-btn" onclick="openCloudinaryWidget()">
+                <span style="font-size:45px;">🎥</span>
+                <h3 id="file-status">Tap to Choose Video</h3>
+                <p style="font-size:12px; color:#666;">Max Limit: <span id="u-limit">0</span> Minutes</p>
             </div>
-            <button class="btn-login" style="margin-top:20px; background:var(--neon); color:#000;">START JAPANESE TO HINDI DUBBING</button>
+
+            <div id="status-container">
+                <div style="display:flex; justify-content:space-between; font-size:12px;">
+                    <span id="process-text" style="color:var(--neon)">AI is analyzing video...</span>
+                    <span id="percent-text">0%</span>
+                </div>
+                <div class="progress-bar"><div class="progress-fill" id="pb-fill"></div></div>
+            </div>
+
+            <video id="output-video" controls></video>
+            <a href="#" id="download-btn" class="btn-action btn-download" download="ziddi_dubbed.mp4">DOWNLOAD VIDEO</a>
+            
+            <button class="btn-action btn-dub" id="dub-trigger" style="display:none;" onclick="startProcess()">START HINDI DUBBING</button>
         </div>
     </div>
 
@@ -116,56 +107,78 @@
         };
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        let selectedVideoUrl = "";
 
-        // 1. Sync Branding & Plans from Admin
-        db.ref('settings/ui').on('value', s => {
-            const d = s.val();
-            if(d) {
-                document.getElementById('ui-title').innerText = d.title;
-                document.getElementById('ui-subtitle').innerText = d.subtitle;
-            }
-        });
-
+        // Sync Branding
+        db.ref('settings/ui').on('value', s => { if(s.exists()){ document.getElementById('ui-title').innerText = s.val().title; document.getElementById('ui-subtitle').innerText = s.val().subtitle; }});
         db.ref('settings/plans').on('value', snap => {
             snap.forEach(child => {
-                const key = child.key;
-                const data = child.val();
-                document.getElementById(`p-price-${key}`).innerText = data.price;
-                document.getElementById(`p-link-${key}`).href = data.link;
-                
-                const list = document.getElementById(`p-feat-${key}`);
-                list.innerHTML = '';
-                if(data.features) {
-                    data.features.split(',').forEach(f => {
-                        list.innerHTML += `<li>${f.trim()}</li>`;
-                    });
-                }
+                const k = child.key; const d = child.val();
+                document.getElementById(`p-price-${k}`).innerText = "$"+d.price;
+                document.getElementById(`p-link-${k}`).href = d.link;
+                const fList = document.getElementById(`p-feat-${k}`); fList.innerHTML = '';
+                if(d.features) d.features.split(',').forEach(f => { fList.innerHTML += `<li>✦ ${f.trim()}</li>`; });
             });
         });
 
-        db.ref('settings/languages').on('value', s => {
-            const sel = document.getElementById('toLang'); sel.innerHTML = '';
-            s.forEach(c => { sel.innerHTML += `<option>${c.val()}</option>`; });
-        });
-
-        // 2. Login Logic
         function login() {
-            const emailIn = document.getElementById('email').value.toLowerCase().replace(/\./g, '_');
-            const passIn = document.getElementById('pass').value;
-            db.ref('users/' + emailIn).once('value', snap => {
+            const e = document.getElementById('email').value.toLowerCase().replace(/\./g, '_');
+            const p = document.getElementById('pass').value;
+            db.ref('users/' + e).once('value', snap => {
                 const u = snap.val();
-                if(u && u.pass === passIn) {
+                if(u && u.pass === p) {
                     document.getElementById('pricing-ui').style.display = 'none';
                     document.getElementById('login-section').style.display = 'none';
                     document.getElementById('main-tool').style.display = 'block';
                     document.getElementById('u-mail').innerText = u.email;
                     document.getElementById('u-plan').innerText = u.plan.toUpperCase();
-                    db.ref('settings/plans/' + u.plan).once('value', p => {
-                        document.getElementById('u-limit').innerText = p.val().limit;
-                    });
-                } else { alert("Access Denied! Gmail or Password is wrong."); }
+                    db.ref('settings/plans/'+u.plan).once('value', pl => { document.getElementById('u-limit').innerText = pl.val().limit; });
+                } else { alert("Wrong Credentials!"); }
+            });
+        }
+
+        function openCloudinaryWidget() {
+            cloudinary.openUploadWidget({
+                cloudName: "dvmx8bz4o", // Aapka cloud name (Example: dvmx8bz4o)
+                uploadPreset: "ziddi_preset",
+                sources: ["local", "camera"],
+                resourceType: "video",
+                multiple: false
+            }, (err, res) => {
+                if (!err && res.event === "success") {
+                    selectedVideoUrl = res.info.secure_url;
+                    document.getElementById('file-status').innerText = "✅ Video Ready";
+                    document.getElementById('dub-trigger').style.display = 'block';
+                }
+            });
+        }
+
+        function startProcess() {
+            const taskId = "task_" + Date.now();
+            db.ref('tasks/' + taskId).set({
+                video_url: selectedVideoUrl,
+                status: "pending",
+                user: document.getElementById('u-mail').innerText,
+                timestamp: taskId
+            });
+
+            document.getElementById('dub-trigger').style.display = 'none';
+            document.getElementById('status-container').style.display = 'block';
+            
+            // Listen for AI Engine update
+            db.ref('tasks/' + taskId).on('value', snap => {
+                const data = snap.val();
+                if(data.status === "completed") {
+                    document.getElementById('status-container').style.display = 'none';
+                    const v = document.getElementById('output-video');
+                    v.src = data.result_url;
+                    v.style.display = 'block';
+                    const d = document.getElementById('download-btn');
+                    d.href = data.result_url;
+                    d.style.display = 'block';
+                }
             });
         }
     </script>
 </body>
-  </html>
+    </html>
