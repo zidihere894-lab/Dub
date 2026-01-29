@@ -3,62 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ZIDDI AI STUDIO - Official</title>
+    <title>ZIDDI AI STUDIO</title>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #05070a; --card: #11141d; --gold: #ffcc00; --neon: #00ff41; --text: #ffffff; }
-        body { background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; margin: 0; }
-        .header { text-align: center; padding: 50px 20px; background: radial-gradient(circle, #1a1e29 0%, #05070a 100%); }
-        .header h1 { color: var(--gold); letter-spacing: 5px; font-size: 35px; text-transform: uppercase; }
-        .container { max-width: 1200px; margin: 0 auto; padding: 20px; }
-        .pricing-section { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-bottom: 40px; }
-        .plan-card { background: var(--card); border: 1px solid #222; border-radius: 25px; padding: 30px; text-align: center; }
-        .price { font-size: 35px; font-weight: 800; color: var(--gold); }
-        #login-section, #main-tool { max-width: 450px; margin: 0 auto; background: var(--card); padding: 35px; border-radius: 25px; border: 1px solid #333; }
-        #main-tool { max-width: 700px; display: none; }
-        input, select { width: 100%; padding: 14px; background: #080a0f; border: 1px solid #333; color: #fff; border-radius: 10px; margin-bottom: 15px; box-sizing: border-box; }
-        .btn-action { width: 100%; padding: 16px; background: var(--gold); border: none; border-radius: 10px; font-weight: 800; cursor: pointer; color: #000; }
-        #status-box { margin-top: 20px; padding: 15px; border-radius: 10px; background: rgba(0,255,65,0.05); border: 1px solid #111; display: none; }
-        @media (max-width: 800px) { .pricing-section { grid-template-columns: 1fr; } }
+        body { background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; margin: 0; overflow-x: hidden; }
+
+        .header { text-align: center; padding: 60px 20px; background: radial-gradient(circle, #1a1e29 0%, #05070a 100%); }
+        .header h1 { color: var(--gold); letter-spacing: 8px; margin: 0; font-size: 42px; text-transform: uppercase; text-shadow: 0 0 20px rgba(255, 204, 0, 0.4); }
+        .header p { color: #888; font-size: 16px; margin-top: 15px; letter-spacing: 1px; }
+
+        .container { max-width: 1200px; margin: 0 auto; padding: 40px 20px; }
+
+        .pricing-section { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-bottom: 60px; }
+        .plan-card { background: var(--card); border: 1px solid #222; border-radius: 30px; padding: 40px 30px; text-align: center; transition: all 0.4s ease; position: relative; display: flex; flex-direction: column; }
+        .plan-card:hover { transform: translateY(-15px); border-color: var(--gold); box-shadow: 0 20px 40px rgba(255, 204, 0, 0.15); }
+        .plan-card h2 { color: var(--gold); font-size: 28px; margin: 0; }
+        .plan-card .price { font-size: 50px; font-weight: 800; margin: 25px 0; color: #fff; }
+        .plan-card ul { list-style: none; padding: 0; margin: 30px 0; flex-grow: 1; text-align: left; }
+        .plan-card ul li { margin-bottom: 15px; font-size: 15px; color: #bbb; display: flex; align-items: center; }
+        .plan-card ul li::before { content: '✦'; color: var(--gold); margin-right: 12px; }
+
+        .btn-buy { background: transparent; border: 2px solid var(--gold); color: var(--gold); padding: 15px; border-radius: 15px; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.3s; text-decoration: none; }
+        .btn-buy:hover { background: var(--gold); color: #000; box-shadow: 0 0 20px var(--gold); }
+
+        #login-section, #main-tool { max-width: 450px; margin: 0 auto; background: var(--card); padding: 40px; border-radius: 30px; border: 1px solid #333; box-shadow: 0 30px 60px rgba(0,0,0,0.5); }
+        #main-tool { max-width: 800px; display: none; }
+        
+        input, select { width: 100%; padding: 15px; background: #080a0f; border: 1px solid #333; color: #fff; border-radius: 12px; margin-bottom: 20px; box-sizing: border-box; font-size: 16px; }
+        .btn-login { width: 100%; padding: 18px; background: var(--gold); border: none; border-radius: 12px; font-weight: 800; font-size: 16px; cursor: pointer; transition: 0.3s; }
+        .btn-login:hover { letter-spacing: 2px; }
+
+        #engine-status { margin-top: 20px; padding: 20px; border-radius: 15px; background: rgba(0,255,65,0.05); border: 1px solid #222; display: none; }
+
+        @media (max-width: 992px) { .pricing-section { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
     <div class="header">
         <h1 id="ui-title">ZIDDI AI STUDIO</h1>
-        <p id="ui-subtitle">Premium Japanese to Hindi Dubbing</p>
+        <p id="ui-subtitle">Revolutionizing Japanese to Hindi AI Dubbing</p>
     </div>
 
     <div class="container">
         <div id="pricing-ui" class="pricing-section">
-            <div class="plan-card"><h2>FREE</h2><div class="price">$0</div><ul id="p-feat-free"></ul></div>
-            <div class="plan-card" style="border-color:var(--gold)"><h2>STANDARD</h2><div class="price">$19</div><ul id="p-feat-standard"></ul></div>
-            <div class="plan-card"><h2>PREMIUM</h2><div class="price">$49</div><ul id="p-feat-premium"></ul></div>
+            <div class="plan-card" id="card-free"><h2>FREE</h2><div class="price">$<span id="p-price-free">0</span><span>/mo</span></div><ul id="p-feat-free"></ul><a href="#" id="p-link-free" class="btn-buy">Get Started</a></div>
+            <div class="plan-card" id="card-standard"><h2>STANDARD</h2><div class="price">$<span id="p-price-standard">19</span><span>/mo</span></div><ul id="p-feat-standard"></ul><a href="#" id="p-link-standard" class="btn-buy">Upgrade Now</a></div>
+            <div class="plan-card" id="card-premium"><h2>PREMIUM</h2><div class="price">$<span id="p-price-premium">49</span><span>/mo</span></div><ul id="p-feat-premium"></ul><a href="#" id="p-link-premium" class="btn-buy">Go Pro</a></div>
         </div>
 
         <div id="login-section">
-            <h2 style="text-align:center; color:var(--gold)">LOGIN</h2>
-            <input type="email" id="email" placeholder="Gmail">
-            <input type="password" id="pass" placeholder="Password">
-            <button class="btn-action" onclick="login()">ENTER STUDIO</button>
+            <h2 style="text-align:center; color:var(--gold)">ACCESS STUDIO</h2>
+            <input type="email" id="email" placeholder="Enter Gmail">
+            <input type="password" id="pass" placeholder="Enter Password">
+            <button class="btn-login" onclick="login()">LOGIN TO ENGINE</button>
         </div>
 
         <div id="main-tool">
-            <div style="display:flex; justify-content:space-between; margin-bottom:20px;">
-                <span id="u-mail"></span> <span id="u-plan" style="color:var(--neon)"></span>
+            <div style="display:flex; justify-content:space-between; margin-bottom:30px;">
+                <span>Logged in: <b id="u-mail" style="color:var(--gold)"></b></span>
+                <span>Plan: <b id="u-plan" style="color:var(--neon)"></b></span>
             </div>
-            <div style="text-align:center;">
-                <p>Limit: <b id="u-limit"></b> Minutes</p>
-                <input type="text" id="videoUrl" placeholder="Paste Direct MP4 Link">
-                <select id="toLang"><option value="hi">Hindi</option></select>
-                <button id="dubBtn" class="btn-action" style="background:var(--neon)" onclick="startDubbing()">START DUBBING</button>
-                
-                <div id="status-box">
-                    <p style="margin:0; font-size:12px; color:#888;">ENGINE STATUS:</p>
-                    <div id="live-status" style="color:var(--gold); font-weight:bold; font-size:18px; margin-top:5px;">Waiting...</div>
-                </div>
+            <div style="text-align:center; border: 2px dashed #444; padding:40px; border-radius:25px;">
+                <p>Max Duration allowed: <span id="u-limit" style="color:var(--gold)">0</span> Minutes</p>
+                <input type="text" id="videoUrl" placeholder="Paste Japanese Video MP4 Link" style="text-align:center;">
+                <select id="toLang"></select>
+                <button id="startBtn" class="btn-login" style="background:var(--neon); color:#000;" onclick="startDubbing()">START AI DUBBING</button>
+            </div>
+            
+            <div id="engine-status">
+                <p style="color:#888; font-size:12px; margin:0;">AI ENGINE PROGRESS:</p>
+                <h3 id="live-msg" style="color:var(--gold); margin-top:5px;">Ready...</h3>
             </div>
         </div>
     </div>
@@ -73,17 +90,27 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Sync Plans
+        // 1. Sync Branding, Plans, and Languages
+        db.ref('settings/ui').on('value', s => { if(s.val()){ document.getElementById('ui-title').innerText = s.val().title; document.getElementById('ui-subtitle').innerText = s.val().subtitle; } });
+
         db.ref('settings/plans').on('value', snap => {
-            snap.forEach(c => {
-                const list = document.getElementById(`p-feat-${c.key}`);
-                if(list && c.val().features) {
-                    list.innerHTML = '';
-                    c.val().features.split(',').forEach(f => { list.innerHTML += `<li>${f}</li>`; });
+            snap.forEach(child => {
+                const key = child.key; const data = child.val();
+                if(document.getElementById(`p-price-${key}`)){
+                    document.getElementById(`p-price-${key}`).innerText = data.price;
+                    document.getElementById(`p-link-${key}`).href = data.link;
+                    const list = document.getElementById(`p-feat-${key}`); list.innerHTML = '';
+                    if(data.features) data.features.split(',').forEach(f => { list.innerHTML += `<li>${f.trim()}</li>`; });
                 }
             });
         });
 
+        db.ref('settings/languages').on('value', s => {
+            const sel = document.getElementById('toLang'); sel.innerHTML = '';
+            s.forEach(c => { sel.innerHTML += `<option value="${c.val()}">${c.val()}</option>`; });
+        });
+
+        // 2. Login Logic
         function login() {
             const emailIn = document.getElementById('email').value.toLowerCase().replace(/\./g, '_');
             const passIn = document.getElementById('pass').value;
@@ -96,31 +123,36 @@
                     document.getElementById('u-mail').innerText = u.email;
                     document.getElementById('u-plan').innerText = u.plan.toUpperCase();
                     db.ref('settings/plans/' + u.plan).once('value', p => { document.getElementById('u-limit').innerText = p.val().limit; });
-                } else { alert("Wrong Credentials!"); }
+                } else { alert("Access Denied!"); }
             });
         }
 
+        // 3. Start Dubbing with Live Tracking
         function startDubbing() {
             const url = document.getElementById('videoUrl').value;
-            if(!url) return alert("Link please!");
-            
-            const taskId = "task_" + Date.now();
-            document.getElementById('status-box').style.display = 'block';
-            document.getElementById('dubBtn').disabled = true;
+            const lang = document.getElementById('toLang').value;
+            if(!url) return alert("Bhai link toh daalo!");
 
+            const taskId = "task_" + Date.now();
+            document.getElementById('engine-status').style.display = 'block';
+            document.getElementById('startBtn').disabled = true;
+
+            // Push to Firebase
             db.ref('tasks/' + taskId).set({
                 video_url: url,
+                target_lang: lang,
                 status: "Waiting for Engine...",
+                user: document.getElementById('u-mail').innerText,
                 timestamp: Date.now()
             });
 
-            // LIVE TRACKING
-            db.ref('tasks/' + taskId + '/status').on('value', s => {
-                const status = s.val();
-                document.getElementById('live-status').innerText = status;
+            // Monitor Status
+            db.ref('tasks/' + taskId + '/status').on('value', snap => {
+                const status = snap.val();
+                document.getElementById('live-msg').innerText = status;
                 if(status === 'completed') {
-                    document.getElementById('live-status').innerHTML = "✅ DONE! Check Telegram.";
-                    document.getElementById('dubBtn').disabled = false;
+                    document.getElementById('live-msg').innerHTML = "✅ SUCCESS! Check Telegram.";
+                    document.getElementById('startBtn').disabled = false;
                 }
             });
         }
